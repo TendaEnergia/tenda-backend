@@ -10,10 +10,10 @@ const options: Options = {
         Documentação da API Tenda Solar.
         
         **Segurança implementada:**
-        - Validação de Esquema com Zod.
-        - Proteção contra Mass Assignment (campo 'papel' restrito).
-        - Autenticação via JWT Bearer Token.
-        - Vínculo automático de registros ao usuário autenticado.
+        - Validação de input obrigatória.
+        - Hash de senhas com bcrypt.
+        - Autenticação via JWT Bearer Token (em desenvolvimento).
+        - Profiles separados para Admin e Cliente.
       `,
     },
     servers: [
@@ -34,87 +34,134 @@ const options: Options = {
       schemas: {
         // --- USUÁRIO ---
 
-        // Entrada para Cadastro (Seguro: sem 'papel')
-        CriarUsuario: {
+        // Entrada para Cadastro de Cliente
+        RegisterClientDTO: {
           type: "object",
-          required: ["nome", "email", "telefone", "senha", "cpf"],
+          required: ["email", "password", "full_name", "cpf", "phone"],
           properties: {
-            nome: { type: "string", example: "Ruan Silva Oliveira" },
             email: {
               type: "string",
               format: "email",
-              example: "ruan.silva@provedor.com.br",
+              example: "cliente@example.com",
             },
-            telefone: { type: "string", example: "67992999998" },
-            senha: { type: "string", format: "password", example: "Senha@123" },
-            cpf: { type: "string", example: "45730310023" }, // CPF Válido para passar no Zod
+            password: {
+              type: "string",
+              format: "password",
+              minLength: 8,
+              example: "SenhaForte123",
+            },
+            full_name: {
+              type: "string",
+              example: "João da Silva",
+            },
+            cpf: {
+              type: "string",
+              pattern: "^\\d{11}$",
+              example: "12345678901",
+            },
+            phone: {
+              type: "string",
+              example: "67992999998",
+            },
           },
         },
 
-        // Resposta de Cadastro (Conforme seu RespostaCadastroDTO)
-        RespostaCadastro: {
+        // Entrada para Cadastro de Admin
+        RegisterAdminDTO: {
+          type: "object",
+          required: ["email", "password", "full_name", "department"],
+          properties: {
+            email: {
+              type: "string",
+              format: "email",
+              example: "admin@example.com",
+            },
+            password: {
+              type: "string",
+              format: "password",
+              minLength: 8,
+              example: "SenhaForte123",
+            },
+            full_name: {
+              type: "string",
+              example: "Administrador",
+            },
+            department: {
+              type: "string",
+              example: "Financeiro",
+            },
+          },
+        },
+
+        // Profile de Cliente
+        ClientProfile: {
           type: "object",
           properties: {
-            token: { type: "string", example: "eyJhbGciOiJIUzI1..." },
+            id: {
+              type: "string",
+              format: "uuid",
+            },
+            full_name: {
+              type: "string",
+            },
+            cpf: {
+              type: "string",
+            },
+            phone: {
+              type: "string",
+            },
+            created_at: {
+              type: "string",
+              format: "date-time",
+            },
+            updated_at: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+
+        // Profile de Admin
+        AdminProfile: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+              format: "uuid",
+            },
+            full_name: {
+              type: "string",
+            },
+            department: {
+              type: "string",
+            },
+            created_at: {
+              type: "string",
+              format: "date-time",
+            },
+            updated_at: {
+              type: "string",
+              format: "date-time",
+            },
+          },
+        },
+
+        // Resposta de Usuário Criado
+        RegisterClientResponse: {
+          type: "object",
+          properties: {
             usuario: {
               type: "object",
               properties: {
-                id: { type: "string", format: "uuid" },
-                nome: { type: "string" },
+                id: {
+                  type: "string",
+                  format: "uuid",
+                },
+                name: {
+                  type: "string",
+                },
               },
             },
-          },
-        },
-
-        // Entrada para Login
-        Login: {
-          type: "object",
-          required: ["email", "senha"],
-          properties: {
-            email: {
-              type: "string",
-              format: "email",
-              example: "ruan.silva@provedor.com.br",
-            },
-            senha: { type: "string", example: "Senha@123" },
-          },
-        },
-
-        // Resposta de Login (Retorna papel para o Front-end gerenciar permissões)
-        RespostaLogin: {
-          type: "object",
-          properties: {
-            token: { type: "string" },
-            papel: { type: "string", example: "USUARIO" },
-          },
-        },
-
-        // --- ENDEREÇO ---
-
-        // Entrada para Endereço (usuario_id NÃO é enviado no body, é pego pelo Token)
-        CriarEndereco: {
-          type: "object",
-          required: ["cep", "numero", "rua", "bairro", "cidade"],
-          properties: {
-            cep: { type: "string", example: "79002010" },
-            rua: { type: "string", example: "Avenida Afonso Pena" },
-            numero: { type: "string", example: "1234" },
-            bairro: { type: "string", example: "Centro" },
-            cidade: { type: "string", example: "Campo Grande" },
-            complemento: { type: "string", example: "Bloco B, Apt 201" },
-          },
-        },
-
-        Endereco: {
-          type: "object",
-          properties: {
-            id: { type: "string", format: "uuid" },
-            cep: { type: "string" },
-            rua: { type: "string" },
-            numero: { type: "string" },
-            bairro: { type: "string" },
-            cidade: { type: "string" },
-            usuario_id: { type: "string", format: "uuid" },
           },
         },
 
@@ -122,16 +169,14 @@ const options: Options = {
         Erro: {
           type: "object",
           properties: {
-            mensagem: { type: "string", example: "CPF inválido" },
-            erros: {
+            mensagem: {
+              type: "string",
+              example: "Há campos faltando.",
+            },
+            detalhes: {
               type: "array",
               items: {
-                type: "object",
-                properties: {
-                  code: { type: "string" },
-                  message: { type: "string" },
-                  path: { type: "array", items: { type: "string" } },
-                },
+                type: "string",
               },
             },
           },
@@ -140,126 +185,43 @@ const options: Options = {
     },
     paths: {
       // Rotas de Usuário
-      "/": {
-        get: {
-          tags: ["Sistema"],
-          summary: "Um aviso amigável (ou não)",
-          description: "Retorna o estilo de fala de uma adolescente chata.",
+      "/register/user": {
+        post: {
+          tags: ["Usuários"],
+          summary: "Registrar novo cliente",
+          description:
+            "Cria um novo usuário com role 'client' e seu respectivo ClientProfile.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/RegisterClientDTO",
+                },
+              },
+            },
+          },
           responses: {
-            "200": {
-              description: "Mensagem recebida com sucesso",
+            "201": {
+              description: "Cliente criado com sucesso",
               content: {
                 "application/json": {
                   schema: {
-                    type: "object",
-                    properties: {
-                      message: {
-                        type: "string",
-                        example: `oiiiiii, tiuru poom????, seu ip é ::1 e o método da requisição é GET`,
-                      },
-                    },
+                    $ref: "#/components/schemas/RegisterClientResponse",
                   },
                 },
               },
             },
-          },
-        },
-      },
-
-      "/usuarios/cadastrar": {
-        post: {
-          tags: ["Usuários"],
-          summary: "Registrar novo usuário",
-          description:
-            "O papel (role) será definido como 'USUARIO' por padrão por segurança.",
-          requestBody: {
-            required: true,
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/CriarUsuario" },
-              },
-            },
-          },
-          responses: {
-            "201": {
-              description: "Criado",
-              content: {
-                "application/json": {
-                  schema: { $ref: "#/components/schemas/RespostaCadastro" },
-                },
-              },
-            },
             "400": {
-              description: "Erro de validação",
+              description: "Erro de validação ou dados inválidos",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/Erro" },
+                  schema: {
+                    $ref: "#/components/schemas/Erro",
+                  },
                 },
               },
             },
-          },
-        },
-      },
-      "/usuarios/login": {
-        post: {
-          tags: ["Usuários"],
-          summary: "Autenticação",
-          requestBody: {
-            required: true,
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Login" },
-              },
-            },
-          },
-          responses: {
-            "200": {
-              description: "Sucesso",
-              content: {
-                "application/json": {
-                  schema: { $ref: "#/components/schemas/RespostaLogin" },
-                },
-              },
-            },
-            "401": { description: "Credenciais inválidas" },
-          },
-        },
-      },
-
-      // Rotas de Endereço
-      "/endereco/cadastrar": {
-        post: {
-          tags: ["Endereços"],
-          summary: "Vincular endereço ao usuário",
-          description:
-            "Requer Token JWT. O ID do usuário é extraído automaticamente do token.",
-          security: [{ bearerAuth: [] }],
-          requestBody: {
-            required: true,
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/CriarEndereco" },
-              },
-            },
-          },
-          responses: {
-            "201": {
-              description: "Endereço cadastrado",
-              content: {
-                "application/json": {
-                  schema: { $ref: "#/components/schemas/Endereco" },
-                },
-              },
-            },
-            "400": {
-              description: "Erro nos dados",
-              content: {
-                "application/json": {
-                  schema: { $ref: "#/components/schemas/Erro" },
-                },
-              },
-            },
-            "401": { description: "Não autorizado" },
           },
         },
       },

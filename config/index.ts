@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-// Validação de variáveis obrigatórias
+// Validation of required environment variables
 const requiredEnvVars = ["SECRET"] as const;
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
@@ -10,7 +10,7 @@ for (const envVar of requiredEnvVars) {
 
 export const config = {
   mode: process.env.NODE_ENV || "development",
-  secret: process.env.SECRET!, // agora é garantido que existe
+  secret: process.env.SECRET!, // now guaranteed to exist
   port: Number(process.env.PORT) || 3000,
   host: "0.0.0.0",
 

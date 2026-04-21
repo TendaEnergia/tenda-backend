@@ -1,23 +1,22 @@
 import { Request, Response } from "express";
-import { PegarDadosFatura } from "../../../shared/services/TesseractService";
-import fs from "fs";
+import { ExtractInvoiceData } from "../../../shared/services/TesseractService";
 
 export async function create(req: Request, res: Response): Promise<Response> {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "Arquivo não enviado" });
+      return res.status(400).json({ error: "File not sent" });
     }
 
-    const pegarDadosFatura = new PegarDadosFatura();
+    const extractInvoiceData = new ExtractInvoiceData();
 
-    // Passamos o path do arquivo que o Multer salvou
-    const dados = await pegarDadosFatura.processarFatura(req.file.path);
+    // Pass the file path that Multer saved
+    const data = await extractInvoiceData.processInvoice(req.file.path);
 
-    // Opcional: deletar arquivo após processar
+    // Optional: delete file after processing
     // await fs.promises.unlink(req.file.path);
 
-    return res.json(dados);
+    return res.json(data);
   } catch (error) {
-    return res.status(500).json({ error: "Erro ao processar fatura" });
+    return res.status(500).json({ error: "Error processing invoice" });
   }
 }

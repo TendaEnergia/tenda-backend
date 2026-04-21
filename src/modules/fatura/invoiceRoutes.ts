@@ -4,8 +4,8 @@ import uploadConfig from "../../shared/config/multer";
 import { create } from "./controller/FaturaControlador";
 
 const upload = multer(uploadConfig);
-const rotasFatura = Router();
+const invoiceRoutes = Router();
 
-rotasFatura.post("/enviar/fatura", upload.single("fatura"), create);
+invoiceRoutes.post("/invoices/process", upload.single("invoice"), create);
 
-export default rotasFatura;
+export default invoiceRoutes;

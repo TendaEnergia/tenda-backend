@@ -1,9 +1,9 @@
 import nodemailer, { Transporter } from "nodemailer";
 import { config } from "../../../config";
 
-interface EnviarEmailDTO {
-  para: string;
-  assunto: string;
+interface SendEmailDTO {
+  to: string;
+  subject: string;
   htmlBody: string;
 }
 
@@ -30,15 +30,11 @@ export class EmailService {
     return EmailService.instance;
   }
 
-  public async enviar({
-    para,
-    assunto,
-    htmlBody,
-  }: EnviarEmailDTO): Promise<void> {
+  public async send({ to, subject, htmlBody }: SendEmailDTO): Promise<void> {
     await this.transporter.sendMail({
       from: process.env.EMAIL_FROM,
-      to: para,
-      subject: assunto,
+      to: to,
+      subject: subject,
       html: htmlBody,
     });
   }
