@@ -2,7 +2,7 @@ import express, { Application } from "express";
 import { AppDataSource } from "./src/shared/database/data-source";
 import { config } from "./config";
 import cors from "cors";
-import helmet from "helmet"; // 1. Importe o Helmet
+import helmet from "helmet"; 
 import routesMain from "./src/routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./src/shared/docs/swagger";
@@ -17,16 +17,16 @@ export class App {
   }
 
   private config() {
-    // Ordem correta de segurança:
-    this._app.use(helmet()); // 2. Helmet vem primeiro para proteger os headers
+   
+    this._app.use(helmet()); 
     
-    // Configuração do CORS
+    
     this._app.use(cors()); 
 
     this._app.use(express.json());
     this._app.set("trust proxy", true);
 
-    // Documentação Swagger
+    
     this._app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   }
 
