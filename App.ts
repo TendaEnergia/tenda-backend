@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import { AppDataSource } from "./src/shared/database/data-source";
 import { config } from "./config";
 import cors from "cors";
+import helmet from "helmet"; 
 import routesMain from "./src/routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./src/shared/docs/swagger";
@@ -16,9 +17,16 @@ export class App {
   }
 
   private config() {
+   
+    this._app.use(helmet()); 
+    
+    
+    this._app.use(cors()); 
+
     this._app.use(express.json());
-    this._app.use(cors()); // Accepts requests from any origin
     this._app.set("trust proxy", true);
+
+    
     this._app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   }
 
