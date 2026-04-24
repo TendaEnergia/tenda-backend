@@ -33,9 +33,13 @@ export class User {
   @DeleteDateColumn()
   deleted_at!: Date | null;
 
-  @OneToOne(() => AdminProfile, (adminProfile) => adminProfile.user)
+  @OneToOne(() => AdminProfile, (adminProfile) => adminProfile.user, {
+    cascade: true,
+  })
   adminProfile!: AdminProfile;
 
-  @OneToOne(() => ClientProfile, (clientProfile) => clientProfile.user)
+  @OneToOne(() => ClientProfile, (clientProfile) => clientProfile.user, {
+    cascade: true,
+  })
   clientProfile!: ClientProfile;
 }
