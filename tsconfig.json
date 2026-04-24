@@ -11,12 +11,9 @@
     "target": "esnext",
     // For nodejs:
     // "lib": ["esnext"],
-    // "types": ["node"],
+    "types": ["node"],
     // and npm install -D @types/node
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/shared/@types"
-    ],
+    "typeRoots": ["./node_modules/@types", "./src/shared/@types"],
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
