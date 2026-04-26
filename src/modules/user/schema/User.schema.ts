@@ -24,6 +24,15 @@ export class User {
   @Column({ length: 100 })
   password_hash!: string;
 
+  @Column({ length: 100 })
+  name!: string;
+
+  @Column({ unique: true, length: 14 })
+  cpf!: string;
+
+  @Column({ nullable: true })
+  phone!: string;
+
   @CreateDateColumn()
   created_at!: Date;
 

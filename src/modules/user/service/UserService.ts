@@ -8,8 +8,8 @@ import bcrypt from "bcrypt";
 import jwt, { sign } from "jsonwebtoken";
 import crypto from "crypto";
 import { getRepository } from "typeorm";
-import { User } from "../entities/User";
-import { RefreshToken } from "../entities/RefreshToken";
+import { User } from "../schema/User.schema";
+import { RefreshToken } from "../schema/RefreshToken.schema";
 
 export class UserService {
   constructor(private userRepository: IUserRepository) {}

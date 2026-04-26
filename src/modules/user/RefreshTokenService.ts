@@ -1,8 +1,8 @@
 import { getRepository } from 'typeorm';
 import jwt, { sign } from 'jsonwebtoken';
 import crypto from 'crypto';
-import { RefreshToken } from './entities/RefreshToken';
-import { User } from './entities/User';
+import { RefreshToken } from './schema/RefreshToken.schema';
+import { User } from './schema/User.schema';
 import { AppError } from '../../shared/errors/AppError';
 
 export class RefreshTokenService {
