@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only ./main.ts",
+    "seed:admin": "ts-node-dev src/shared/utils/seed-Admin.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm -- migration:generate src/shared/database/migrations/Init -d src/shared/database/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/shared/database/data-source.ts",
