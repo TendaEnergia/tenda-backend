@@ -63,7 +63,7 @@ export function ensureAuthenticated(
       return;
     }
 
-    request.user = { id };
+    request.user = { id, role: decoded.role }; // Agora Passa o id + role na requisição!
 
     console.log("User definido:\n", request.user);
 
