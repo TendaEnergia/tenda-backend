@@ -14,4 +14,15 @@ userRoutes.post(
     userController.registerAdmin.bind(userController)
 );
 
+userRoutes.get(
+    "/me",
+    ensureAuthenticated,
+    userController.list.bind(userController)
+);
+
+userRoutes.patch(
+  "/edit", 
+  ensureAuthenticated,
+  (req, res, next) => userController.editar(req, res, next)
+);
 export { userRoutes };
