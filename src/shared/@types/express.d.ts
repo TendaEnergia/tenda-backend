@@ -7,7 +7,7 @@ declare global {
     interface Request {
       user: {
         id: string;
-        role: string; // Adicionamos essa linha aqui!
+        role: string;
       };
       refreshTokenRecord?: RefreshToken;
     }

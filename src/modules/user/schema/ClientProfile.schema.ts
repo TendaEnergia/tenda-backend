@@ -15,13 +15,13 @@ export class ClientProfile {
   id!: string;
 
   @Column({ length: 255 })
-  full_name!: string; // [cite: 16]
+  full_name?: string; // [cite: 16]
 
   @Column({ length: 14 })
   cpf!: string; // [cite: 18]
 
   @Column({ length: 20 })
-  phone!: string; // [cite: 19]
+  phone?: string; // [cite: 19]
 
   @CreateDateColumn()
   created_at!: Date; // [cite: 20]

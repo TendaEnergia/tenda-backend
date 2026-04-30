@@ -8,7 +8,6 @@ export function ensureAdmin(
 ): void {
   const { role } = request.user;
 
-  // Comparando com o Enum para evitar erro de digitação
   if (role !== UserRole.ADMIN) {
     response.status(403).json({
       message: `Acesso negado. Esta rota é exclusiva para administradores. 
